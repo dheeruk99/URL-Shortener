@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid, text, varchar } from "drizzle-orm/pg-core";
+const {pgTable, timestamp, uuid, text, varchar } = require("drizzle-orm/pg-core");
 
 
 const usersTable = pgTable("users", {
@@ -10,7 +10,6 @@ const usersTable = pgTable("users", {
   email:varchar({length:255}).unique().notNull(),
 
   password:text().notNull(),
-  salt:text().notNull(),
 
   createdAt: timestamp('created_At').defaultNow().notNull(),
   updatedAt: timestamp('updated_At').$onUpdate(()=>new Date()),
