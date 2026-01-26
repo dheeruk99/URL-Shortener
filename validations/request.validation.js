@@ -7,4 +7,13 @@ const signupPostRequestBodySchema = z.object({
     password: z.string().min(3).max(18),
 })
 
-module.exports = signupPostRequestBodySchema;
+const loginPostRequestBodySchema = z.object({
+    email:z.email(),
+    password: z.string().min(3).max(18),
+})
+
+
+module.exports = {
+    signupPostRequestBodySchema,
+    loginPostRequestBodySchema
+};

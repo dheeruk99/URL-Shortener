@@ -1,11 +1,9 @@
 const { eq } = require('drizzle-orm');
 const db = require('../db/index')
 const {usersTable} = require('../models');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const {signupPostRequestBodySchema} = require('../validations/request.validation')
+const {hashPassword,comparePasswords} = require('../utils/hash');
 
-const signupUser = async function(firstname, lastname, email, password){
+const createUser = async function(firstname, lastname, email, password){
     
     const existingUser = await getUserByEmail(email);
     if(existingUser.length==1){
@@ -27,6 +25,12 @@ const signupUser = async function(firstname, lastname, email, password){
     }
 }
 
+const authenticateUser = async function(plainPassword,hashedPassword){
+    
+    return await comparePasswords(plainPassword,hashedPassword);
+
+}
+
 const getUserByEmail = async function(email){
 
    try{
@@ -45,34 +49,8 @@ const getUserByEmail = async function(email){
    }
 }
 
-const hashPassword = async function(plainpassword){
-    try{
-
-        const hashedPassword = await bcrypt.hash(plainpassword, saltRounds);
-        return hashedPassword;
-
-    }catch(err){
-
-        throw new Error(`Password hashing failed ${err}`);
-
-    }
-}
-
-const comparePasswords = async function (plainPassword, hashedPassword) {
-  try {
-
-    const match = await bcrypt.compare(plainPassword, hashedPassword);
-    return match;
-
-  } catch (error) {
-
-    throw new Error(`Password comparison failed ${err}`);
-
-  }
-}
-
-
 module.exports = {
-    signupUser,
-    getUserByEmail
+    createUser,
+    getUserByEmail,
+    authenticateUser
 }
