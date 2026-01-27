@@ -4,22 +4,35 @@
  *@param {import("express").NextFunction} nextFunction
 */
 
-const {validateUserToken} = require('../utils/token')
 
-function authMiddleware(req,res,next){
-    const authHeader = req.headers['authorization'];
+const { validateUserToken } = require("../utils/token");
 
-    if(!authHeader){
-        return next();
-    }
-    if(!authHeader.startsWith('Bearer ')){
-        return res.status(401).json({error:`Authorization header must start with Bearer`})
-    }
-    const [_,token] = authHeader.split(' ');
+async function authMiddleware(req, res, next) {
+  const authHeader = req.headers["authorization"];
 
-    const payload = validateUserToken(token);
-    req.user = payload;
-    next();
+  if (!authHeader) {
+    return next();
+  }
+  if (!authHeader.startsWith("Bearer ")) {
+    return res
+      .status(401)
+      .json({ error: `Authorization header must start with Bearer` });
+  }
+  const [_, token] = authHeader.split(" ");
+
+  const payload = await validateUserToken(token);
+  req.user = payload;
+  next();
 }
 
-module.exports = authMiddleware;
+function isUserAuthenticated(req, res, next) {
+  if (!req.user) {
+    return res.status(400).json({ error: `Unauthorized attempt` });
+  }
+  next();
+}
+
+module.exports = {
+  authMiddleware,
+  isUserAuthenticated,
+};

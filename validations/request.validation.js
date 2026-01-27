@@ -1,4 +1,5 @@
-const {z, email} = require('zod');
+const {z} = require('zod');
+
 
 const signupPostRequestBodySchema = z.object({
     firstname:z.string(),
@@ -12,8 +13,15 @@ const loginPostRequestBodySchema = z.object({
     password: z.string().min(3).max(18),
 })
 
+const shortenUrlPostRequestBodySchema = z.object({
+    shortCode:z.string({length:50}).optional(),
+    targetURL:z.url()
+})
+
 
 module.exports = {
     signupPostRequestBodySchema,
-    loginPostRequestBodySchema
+    loginPostRequestBodySchema,
+    shortenUrlPostRequestBodySchema
 };
+
