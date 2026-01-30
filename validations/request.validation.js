@@ -15,7 +15,22 @@ const loginPostRequestBodySchema = z.object({
 
 const shortenUrlPostRequestBodySchema = z.object({
     shortCode:z.string({length:50}).optional(),
-    targetURL:z.url()
+    targetURL:z.string()
+  .transform((val) => {
+    val = val.trim();
+    if (!/^https?:\/\//i.test(val)) {
+      val = 'https://' + val;
+    }
+    return val;
+  })
+  .refine((val) => {
+    try {
+      new URL(val);
+      return true;
+    } catch {
+      return false;
+    }
+  }, { message: "Invalid URL" })
 })
 
 
