@@ -7,7 +7,7 @@ const urlsTable = pgTable("urls", {
   shortCode: varchar('code',{length:155}).unique().notNull(),
   targetURL: text('target_url').notNull(),
 
-  userId: uuid('user_id').references(()=>usersTable.id).notNull(),
+  userId: uuid('user_id').references(()=>usersTable.id),
 
   createdAt:timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').$onUpdate(()=>new Date())

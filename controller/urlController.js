@@ -8,25 +8,26 @@ const { ca } = require('zod/locales');
 
 const shortenUrl = async function (req, res) {
   try {
+    const baseUrl = process.env.BASE_URL;
     const validationResult =
       await shortenUrlPostRequestBodySchema.safeParseAsync(req.body);
-
     if (validationResult.error) {
       return res
         .status(400)
         .json({ error: z.treeifyError(validationResult.error) });
     }
+    
     let { shortCode, targetURL } = validationResult.data;
     shortCode = shortCode ?? nanoid(6);
 
-    const userId = req.user.id;
+    const userId = req?.user?.id || null;
 
     const urlResponse = await generateShortUrl(shortCode, targetURL, userId);
 
     if (!urlResponse) {
       return res.status(409).json({ error: `Short URL code already exists` });
     }
-    return res.status(200).json({ id: urlResponse.id });
+    return res.status(200).json({ redirectURL: `${baseUrl}/${urlResponse}` });
   } catch (err) {
     throw err;
   }
@@ -35,12 +36,12 @@ const shortenUrl = async function (req, res) {
 
 const redirectUrl = async function (req, res) {
     try{
-      const { urlCode } = req.params;
+      const  urlCode  = req.params.url
       const urlResponse = await getUrlByCode(urlCode);
       if(urlResponse.length === 0){
         return res.status(404).json({error: "URL not found"});
       } else {
-        return res.status(200).json({targetURL: urlResponse[0].targetURL});
+        return res.redirect(urlResponse[0].targetURL);
       }
     }catch(err){
       throw err;

@@ -15,6 +15,7 @@ const generateShortUrl = async function (shortCode, targetURL, userId) {
     if (existingShortUrl.length > 0) {
       return 0;
     }
+
     const [url] = await db
       .insert(urlsTable)
       .values({
@@ -23,11 +24,9 @@ const generateShortUrl = async function (shortCode, targetURL, userId) {
         userId,
       })
       .returning({
-        id: urlsTable.id,
         shortCode: urlsTable.shortCode,
-        targetURL: urlsTable.targetURL,
       });
-    return url;
+    return url.shortCode;
   } catch (err) {
     // console.log(err)
     throw err;
@@ -64,7 +63,6 @@ const getAllUrlsByUserId = async function (userId) {
 
 const deleteUrlById = async function (urlId, userId) {
   try {
-    console.log("Service - Deleting URL ID:", urlId, "for User ID:", userId);
     const deleteResponse = await db
       .delete(urlsTable)
       .where(and(eq(urlsTable.id, urlId), eq(urlsTable.userId, userId)))

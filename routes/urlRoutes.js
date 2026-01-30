@@ -4,9 +4,11 @@ const { isUserAuthenticated } = require('../middleware/authMiddleware');
 
 const urlRouter = express.Router();
 
-urlRouter.post('/',isUserAuthenticated,urlController.shortenUrl)
+urlRouter.post('/',urlController.shortenUrl)
+urlRouter.get('/shorturls',isUserAuthenticated,urlController.getAllShortenedUrls);
 urlRouter.get('/:url',urlController.redirectUrl)
 urlRouter.delete('/:urlId',isUserAuthenticated,urlController.deleteShortenedUrl)
+
 
 
 module.exports = urlRouter;
